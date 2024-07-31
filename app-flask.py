@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # Import CORS
 from dotenv import load_dotenv
 import os
 import sqlite3
@@ -11,6 +12,7 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for the Flask app
 
 # Function to load Google Gemini model and provide queries as response
 def get_gemini_response(question, prompt):

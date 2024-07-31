@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Query Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 10px 0; }
+        pre { background-color: #f4f4f4; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Gemini App To Retrieve SQL Data</h1>
+    <input type="text" id="question" placeholder="Input your question here">
+    <button onclick="askQuestion()">Ask the question</button>
+    <h2>Generated SQL Query</h2>
+    <pre id="sql_query"></pre>
+    <h2>The Response is</h2>
+    <pre id="response"></pre>
+
+    <script>
+        async function askQuestion() {
+            const question = document.getElementById('question').value;
+            const response = await fetch('/api/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question })
+            });
+            const data = await response.json();
+            document.getElementById('sql_query').innerText = data.sql_query;
+            document.getElementById('response').innerText = JSON.stringify(data.response, null, 2);
+        }
+    </script>
+</body>
+</html>

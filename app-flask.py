@@ -1,13 +1,16 @@
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
-load_dotenv()  # Load all the environment variables
-
-import streamlit as st
 import os
 import sqlite3
 import google.generativeai as genai
 
+# Load environment variables
+load_dotenv()
+
 # Configure Genai Key
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+app = Flask(__name__)
 
 # Function to load Google Gemini model and provide queries as response
 def get_gemini_response(question, prompt):
@@ -40,22 +43,16 @@ prompt = [
     """
 ]
 
-# Streamlit App
-st.set_page_config(page_title="I can Retrieve Any SQL query")
-st.header("Gemini App To Retrieve SQL Data")
-
-question = st.text_input("Input: ", key="input")
-
-submit = st.button("Ask the question")
-
-# if submit is clicked
-if submit:
+@app.route('/api/query', methods=['POST'])
+def query():
+    data = request.json
+    question = data['question']
     sql_query = get_gemini_response(question, prompt)
-    st.subheader("Generated SQL Query")
-    st.write(sql_query)
-
     response = read_sql_query(sql_query, "student.db")
-    
-    st.subheader("The Response is")
-    for row in response:
-        st.write(row)
+    return jsonify({
+        'sql_query': sql_query,
+        'response': response
+    })
+
+if __name__ == '__main__':
+    app.run(debug=True)
